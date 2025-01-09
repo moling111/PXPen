@@ -1,0 +1,26 @@
+
+.DS_Store
+
+
+## CocoaPods
+
+Pods/
+
+
+## Xcode Patch
+
+*.xcodeproj/*
+
+
+## User settings
+
+xcuserdata/
+
+
+## App packaging
+
+*.ipa
+
+*.dSYM.zip
+
+*.dSYM
