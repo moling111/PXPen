@@ -16,13 +16,23 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor.white
         
+        
+        if true {
+            setUpDrawView()
+        }
+        
+        
+        
+        
+        
+    }
+    
+    private func setUpDrawView() {
         let drawView = PXPenDrawingView(frame: self.view.bounds)
         drawView.backgroundColor = UIColor.lightText
         self.view.addSubview(drawView)
         self.drawView = drawView
-        
     }
-
 
 }
 

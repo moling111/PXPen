@@ -7,7 +7,7 @@
 
 import Foundation
 
-class PXLineF {
+struct PXLineF {
     
     let p1: CGPoint
     var p2: CGPoint
@@ -45,11 +45,17 @@ class PXLineF {
         return hypot(dx(), dy())
     }
     
+    func angle() -> Double {
+        let radian = atan2(dy(), dx())
+        // 将弧度转换为度
+        return radian * 180.0 / Double.pi
+    }
+    
     func normalVector() -> PXLineF {
         return PXLineF(p1: p1, p2: p1 + CGPoint(x: dy(), y: -dx()))
     }
     
-    func setLength(_ len: CGFloat) {
+    mutating func setLength(_ len: CGFloat) {
         let oldLength = length()
         if oldLength > 0 {
             p2 = CGPoint(x: x1() + len/oldLength * dx(), y: y1() + len/oldLength * dy())
