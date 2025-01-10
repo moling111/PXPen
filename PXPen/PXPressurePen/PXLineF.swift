@@ -51,6 +51,7 @@ struct PXLineF {
         return radian * 180.0 / Double.pi
     }
     
+    /** 返回一条与该直线垂直、起点和长度相同的直线 */
     func normalVector() -> PXLineF {
         return PXLineF(p1: p1, p2: p1 + CGPoint(x: dy(), y: -dx()))
     }

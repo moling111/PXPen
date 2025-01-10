@@ -1,15 +1,11 @@
 
 .DS_Store
 
+*.xcworkspacedata
 
 ## CocoaPods
 
 Pods/
-
-
-## Xcode Patch
-
-*.xcodeproj/*
 
 
 ## User settings

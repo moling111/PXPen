@@ -138,6 +138,66 @@ struct PXGeometryUtils {
         return CGPoint(x: x, y: y)
     }
     
+    static func curveToPolygon(points: [PXPair], roundStart: Bool, roundEnd: Bool) -> PXPolygonF {
+        let n_points = points.count
+        switch n_points {
+        case 0:
+            return PXPolygonF(path: CGMutablePath())
+        case 1:
+            return lineToPolygonF(start: points[0].point, end: points[0].point, startWidth: points[0].width, endWidth: points[0].width)
+        default:
+            guard let startWidth = points.first?.width, let endWidth = points.last?.width else {
+                return PXPolygonF(path: CGMutablePath())
+            }
+            var newPoints = [(CGPoint, CGPoint)]()
+            let firstSegment = PXLineF(p1: points[0].point, p2: points[1].point)
+            var startNormalLine = firstSegment.normalVector()
+            startNormalLine.setLength(startWidth/2)
+            newPoints.append((startNormalLine.p2, startNormalLine.p1 - CGPoint(x: startNormalLine.dx(), y: startNormalLine.dy())))
+
+            for i in 1 ..< (n_points - 1) {
+                var normalLine = PXLineF(p1: points[i-1].point, p2: points[i+1].point).normalVector()
+                normalLine.setLength(points[i].width/2)
+                let d1 = points[i].point + CGPoint(x: normalLine.dx(), y: normalLine.dy())
+                let d2 = points[i].point - CGPoint(x: normalLine.dx(), y: normalLine.dy())
+                newPoints.append((d1, d2))
+            }
+            
+            //最后一个点和第一个点相似
+            let lastSegment = PXLineF(p1: points[n_points - 2].point, p2: points[n_points - 1].point)
+            var endNormalLine = lastSegment.normalVector()
+            endNormalLine.setLength(endWidth/2)
+            let d1 = points.last!.point + CGPoint(x: endNormalLine.dx(), y: endNormalLine.dy())
+            let d2 = points.last!.point - CGPoint(x: endNormalLine.dx(), y: endNormalLine.dy())
+            newPoints.append((d1, d2))
+            
+            let path = CGMutablePath()
+            path.move(to: newPoints[0].0)
+            for i in 1 ..< n_points {
+                path.addLine(to: newPoints[i].0)
+            }
+            
+            if roundEnd == true {
+                let rectF = CGRect(x: points.last!.point.x - endWidth/2, y: points.last!.point.y - endWidth/2, width: endWidth, height: endWidth)
+                path.arcTo(rectF, startAngle: (180.0 + lastSegment.angle()), endAngle: -180.0)
+            } else {
+                path.addLine(to: newPoints.last!.1)
+            }
+            
+            let indexs = (0..<n_points).reversed()
+            for i in indexs {
+                path.addLine(to: newPoints[i].1)
+            }
+            
+            if roundStart == true {
+                let rectF = CGRect(x: points[0].point.x - startWidth/2, y: points[0].point.y - startWidth/2, width: startWidth, height: startWidth)
+                path.arcTo(rectF, startAngle: (firstSegment.angle() - 90.0), endAngle: -180.0)
+            } else {
+                path.addLine(to: newPoints[0].0)
+            }
+            return PXPolygonF(path: path)
+        }
+    }
 }
 
 
